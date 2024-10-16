@@ -1,0 +1,12 @@
+[package]
+name = "aligned-silent-bid"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rsa = "0.9.6"
+rand = "0.8.5"
+hex = "0.4.3"
+base64 = "0.22.1"
+sp1-zkvm = "2.0.0"
+serde = "1.0.210"
