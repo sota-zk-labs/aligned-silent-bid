@@ -4,5 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+aligned-sp1-prover = { path = "sp1-prover"}
 
 [dev-dependencies]

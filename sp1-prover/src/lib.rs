@@ -14,7 +14,7 @@ pub struct Bidder {
     pub address: String,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct BidderDecryptedData {
     pub amount: u128,
     pub timestamp: u128,
