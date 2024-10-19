@@ -6,13 +6,13 @@ pub const PVK_PEM: &str = include_str!("../pvk.pem");
 #[derive(Deserialize, Serialize)]
 pub struct AuctionData {
     pub bidders: Vec<Bidder>,
-    pub id: u128,
+    pub id: Vec<u8>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Bidder {
     pub encrypted_data: Vec<u8>,
-    pub address: String,
+    pub address: Vec<u8>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -90,7 +90,7 @@ mod tests {
                         },
                         &pbk,
                     ),
-                    address: "0x0123".to_string(),
+                    address: vec![5; 32],
                 },
                 Bidder {
                     encrypted_data: encrypt_bidder_data(
@@ -100,16 +100,16 @@ mod tests {
                         },
                         &pbk,
                     ),
-                    address: "0x0456".to_string(),
+                    address: vec![1; 32],
                 },
             ],
-            id: 0,
+            id: vec![0; 32],
         });
 
         let client = ProverClient::new();
         let (pk, vk) = client.setup(elf.as_slice());
 
-        let Ok(proof) = client.prove(&pk, stdin).run() else {
+        let Ok(mut proof) = client.prove(&pk, stdin).run() else {
             println!("Something went wrong!");
             return;
         };
@@ -118,7 +118,11 @@ mod tests {
         client.verify(&proof, &vk).expect("verification failed");
         println!("Proof verified successfully.");
 
-        println!("{:?}", proof.public_values);
+        // println!("{:?}", proof.public_values);
+        let hash_data = proof.public_values.read::<[u8; 32]>();
+        println!("{:?}", hash_data);
+        let winner_addr = proof.public_values.read::<Vec<u8>>();
+        println!("{:?}", winner_addr);
         // Todo: validate with data
     }
 
@@ -134,7 +138,7 @@ mod tests {
                 },
                 &pbk,
             ),
-            address: "0x0123".to_string(),
+            address: vec![0; 32],
         };
         let decrypted_data = super::decrypt_bidder_data(&pvk, &bidder);
         assert_eq!(decrypted_data.timestamp, 1e10 as u64);
