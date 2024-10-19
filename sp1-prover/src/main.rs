@@ -1,7 +1,7 @@
 #![no_main]
 
-use rsa::{Pkcs1v15Encrypt, RsaPrivateKey};
-use aligned_sp1_prover::{AuctionData, Bidder, BidderDecryptedData, PVK_PEM};
+use rsa::{RsaPrivateKey};
+use aligned_sp1_prover::{decrypt_bidder_data, AuctionData, Bidder, BidderDecryptedData, PVK_PEM};
 use rsa::pkcs8::{DecodePrivateKey};
 use tiny_keccak::{Hasher, Keccak};
 
@@ -48,9 +48,4 @@ fn calc_auction_hash(auction_data: &AuctionData) -> [u8; 32] {
     hasher.update(&input);
     hasher.finalize(&mut output);
     output
-}
-
-fn decrypt_bidder_data(pvk: &RsaPrivateKey, bidder: &Bidder) -> BidderDecryptedData {
-    let data = String::from_utf8(pvk.decrypt(Pkcs1v15Encrypt, &bidder.encrypted_data).expect("failed to decrypt")).unwrap();
-    serde_json::from_str::<BidderDecryptedData>(&data).expect("failed to parse decrypted data")
 }
